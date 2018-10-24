@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mi_popular"
+        app:showAsAction="never"
+        android:title="@string/menu_popular" />
+    <item
+        android:id="@+id/mi_top_rated"
+        app:showAsAction="collapseActionView"
+        android:title="@string/menu_top_rated"/>
+</menu>
