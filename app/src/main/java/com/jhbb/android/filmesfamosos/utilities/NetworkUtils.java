@@ -17,9 +17,12 @@ public final class NetworkUtils {
 
     private static final String MOVIES_URL = "https://api.themoviedb.org/3";
     private static final String QUERY_PARAM = "api_key";
-    private static final String API_KEY_VALUE = "";
     private static final String POPULAR_ENDPOINT = "movie/popular";
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
+
+    // This is a key provided by "themoviedb.org".
+    // For more information, please read README.md file
+    private static final String API_KEY_VALUE = "";
 
     public static URL buildUrl(MovieCategoryEnum movieCategory) {
         String endpoint = getEndpoint(movieCategory);
