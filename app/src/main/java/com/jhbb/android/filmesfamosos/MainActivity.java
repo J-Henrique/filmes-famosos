@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.jhbb.android.filmesfamosos.adapters.MoviesAdapter;
 import com.jhbb.android.filmesfamosos.enums.MovieCategoryEnum;
@@ -56,8 +57,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callMoviesTask() {
-        Log.v(TAG, "fetching data");
-        new FetchMoviesTask().execute();
+
+        Log.v(TAG, "checking internet connectivity");
+        boolean isOnline = NetworkUtils.isOnline(getApplicationContext());
+
+        if (isOnline) {
+            Log.v(TAG, "connection established");
+            Log.v(TAG, "fetching data");
+            new FetchMoviesTask().execute();
+        } else {
+            Log.v(TAG, "no connection");
+            Toast.makeText(getApplicationContext(), R.string.warning_connectivity, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

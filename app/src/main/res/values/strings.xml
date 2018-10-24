@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Filmes Famosos</string>
 
+    <string name="warning_connectivity">Por favor, verifique sua conexão.</string>
+
     <string name="menu_popular">Mais populares</string>
     <string name="menu_top_rated">Melhor classificação</string>
 </resources>
