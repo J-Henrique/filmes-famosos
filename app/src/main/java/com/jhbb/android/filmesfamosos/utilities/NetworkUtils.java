@@ -20,9 +20,7 @@ public final class NetworkUtils {
     private static final String POPULAR_ENDPOINT = "movie/popular";
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
 
-    // This is a key provided by "themoviedb.org".
-    // For more information, please read README.md file
-    private static final String API_KEY_VALUE = "";
+
 
     public static URL buildUrl(MovieCategoryEnum movieCategory) {
         String endpoint = getEndpoint(movieCategory);
@@ -30,7 +28,7 @@ public final class NetworkUtils {
         Uri uri = Uri.parse(MOVIES_URL)
                 .buildUpon()
                 .appendEncodedPath(endpoint)
-                .appendQueryParameter(QUERY_PARAM, API_KEY_VALUE)
+                .appendQueryParameter(QUERY_PARAM, ApiConfigUtils.API_KEY_VALUE)
                 .build();
 
         URL url = null;
