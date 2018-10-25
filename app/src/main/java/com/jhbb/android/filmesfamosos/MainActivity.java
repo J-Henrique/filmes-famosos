@@ -1,12 +1,15 @@
 package com.jhbb.android.filmesfamosos;
 
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcel;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -49,6 +52,18 @@ public class MainActivity extends AppCompatActivity {
     private void setMoviesAdapter(List<MovieModel> moviesList) {
         moviesAdapter = new MoviesAdapter(this, moviesList);
         mMoviesListGridView.setAdapter(moviesAdapter);
+        mMoviesListGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.v(TAG, "grid item clicked");
+                MovieModel selectedItem = moviesAdapter.getItem(i);
+
+                Intent startMovieDetailsIntent = new Intent(getApplicationContext(), MovieDetailsActivity.class);
+                startMovieDetailsIntent.putExtra("movieDetails", selectedItem);
+
+                startActivity(startMovieDetailsIntent);
+            }
+        });
     }
 
     private void displayLoading(boolean loadingVisible) {
@@ -120,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
                 displayLoading(false);
             } else {
-                //showError()
+                Toast.makeText(getApplicationContext(), R.string.warning_no_results, Toast.LENGTH_LONG).show();
             }
         }
     }

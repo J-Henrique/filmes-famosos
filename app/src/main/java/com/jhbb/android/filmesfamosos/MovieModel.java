@@ -1,6 +1,9 @@
 package com.jhbb.android.filmesfamosos;
 
-public class MovieModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class MovieModel implements Parcelable {
 
     private String title;
     private String poster;
@@ -9,6 +12,14 @@ public class MovieModel {
     private String releaseDate;
 
     public MovieModel() { }
+
+    private MovieModel(Parcel in) {
+        title = in.readString();
+        poster = in.readString();
+        overview = in.readString();
+        voteAverage = in.readString();
+        releaseDate = in.readString();
+    }
 
     public String getTitle() {
         return title;
@@ -49,4 +60,31 @@ public class MovieModel {
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int i) {
+        out.writeString(title);
+        out.writeString(poster);
+        out.writeString(overview);
+        out.writeString(voteAverage);
+        out.writeString(releaseDate);
+    }
+
+    public static final Parcelable.Creator<MovieModel> CREATOR = new Parcelable.Creator<MovieModel>() {
+
+        @Override
+        public MovieModel createFromParcel(Parcel parcel) {
+            return new MovieModel(parcel);
+        }
+
+        @Override
+        public MovieModel[] newArray(int size) {
+            return new MovieModel[size];
+        }
+    };
 }

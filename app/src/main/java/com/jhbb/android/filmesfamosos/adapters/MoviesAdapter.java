@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,18 +24,21 @@ import java.util.List;
 
 public class MoviesAdapter extends ArrayAdapter<MovieModel> {
 
+    private static final String TAG = MoviesAdapter.class.getSimpleName();
+
     public MoviesAdapter(Context context, List<MovieModel> moviesList) {
         super(context, 0, moviesList);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.v(TAG, "getting view");
+
         MovieModel movieModel = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.movie_card, parent, false);
         }
-
 
         ImageView imageView = convertView.findViewById(R.id.iv_movie_poster);
         String imagePath = movieModel.getPoster();
