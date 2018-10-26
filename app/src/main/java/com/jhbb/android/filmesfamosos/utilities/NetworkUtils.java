@@ -37,11 +37,10 @@ public final class NetworkUtils {
         URL url = null;
         try {
             url = new URL(uri.toString());
+            Log.v(TAG, url.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
-        Log.v(TAG, url.toString());
 
         return url;
     }

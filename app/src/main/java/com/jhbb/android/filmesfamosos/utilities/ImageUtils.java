@@ -1,7 +1,6 @@
 package com.jhbb.android.filmesfamosos.utilities;
 
 import android.net.Uri;
-import android.nfc.Tag;
 import android.util.Log;
 
 import com.jhbb.android.filmesfamosos.enums.ImageSizeEnum;
@@ -51,11 +50,11 @@ public class ImageUtils {
         URL url = null;
         try {
             url = new URL(uri.toString());
+            Log.v(TAG, url.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
-        Log.v(TAG, url.toString());
         return url;
     }
 }

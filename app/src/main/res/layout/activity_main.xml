@@ -2,31 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
+    android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <FrameLayout
-        android:background="@color/colorPrimaryDark"
-        android:padding="8dp"
+    <GridView
+        android:id="@+id/gv_movies_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:verticalSpacing="18dp"
+        android:horizontalSpacing="18dp"
+        android:stretchMode="columnWidth"
+        android:numColumns="auto_fit" />
 
-        <GridView
-            android:id="@+id/gv_movies_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:verticalSpacing="18dp"
-            android:horizontalSpacing="18dp"
-            android:stretchMode="columnWidth"
-            android:numColumns="auto_fit" />
-
-        <ProgressBar
-            android:id="@+id/pb_loading_movies"
-            android:visibility="invisible"
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </FrameLayout>
+    <ProgressBar
+        android:id="@+id/pb_loading_movies"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

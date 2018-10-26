@@ -15,7 +15,7 @@
     <style name="TextViewValue">
         <item name="android:textColor">@color/colorFontPrimary</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 

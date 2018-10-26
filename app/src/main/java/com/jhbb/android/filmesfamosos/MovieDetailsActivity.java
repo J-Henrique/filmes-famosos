@@ -1,6 +1,5 @@
 package com.jhbb.android.filmesfamosos;
 
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,8 +16,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = MovieDetailsActivity.class.getSimpleName();
 
-    private MovieModel movieModel;
-
     private ImageView mPosterImageView;
     private TextView mMovieTitleTextView;
     private TextView mVoteAverageTextView;
@@ -34,7 +31,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         bindUIComponents();
 
-        movieModel = getIntent().getExtras().getParcelable("movieDetails");
+        MovieModel movieModel = getIntent().getExtras().getParcelable("movieDetails");
         if (movieModel != null) {
             Log.v(TAG, "selected movie: " + movieModel.getTitle());
 

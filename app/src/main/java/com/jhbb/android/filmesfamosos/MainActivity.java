@@ -2,7 +2,6 @@ package com.jhbb.android.filmesfamosos;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Parcel;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public class FetchMoviesTask extends AsyncTask<Void, Void, MovieModel[]> {
+    class FetchMoviesTask extends AsyncTask<Void, Void, MovieModel[]> {
 
         @Override
         protected void onPreExecute() {
@@ -119,9 +118,8 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 String httpResponse = NetworkUtils.getResponseFromUrl(url);
-                MovieModel[] moviesList = MoviesJsonUtils.getMoviesListFromResponse(httpResponse);
 
-                return moviesList;
+                return MoviesJsonUtils.getMoviesListFromResponse(httpResponse);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

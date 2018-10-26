@@ -1,11 +1,11 @@
 package com.jhbb.android.filmesfamosos.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,9 +16,6 @@ import com.jhbb.android.filmesfamosos.enums.ImageSizeEnum;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -30,8 +27,9 @@ public class MoviesAdapter extends ArrayAdapter<MovieModel> {
         super(context, 0, moviesList);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         Log.v(TAG, "getting view");
 
         MovieModel movieModel = getItem(position);
@@ -41,13 +39,15 @@ public class MoviesAdapter extends ArrayAdapter<MovieModel> {
         }
 
         ImageView imageView = convertView.findViewById(R.id.iv_movie_poster);
-        String imagePath = movieModel.getPoster();
+        if (movieModel != null) {
+            String imagePath = movieModel.getPoster();
 
-        URL imageUrl = ImageUtils.buildImageUrl(ImageSizeEnum.LARGE, imagePath);
-        Picasso.get().load(imageUrl.toString()).into(imageView);
+            URL imageUrl = ImageUtils.buildImageUrl(ImageSizeEnum.LARGE, imagePath);
+            Picasso.get().load(imageUrl.toString()).into(imageView);
 
-        TextView textView = convertView.findViewById(R.id.tv_movie_title);
-        textView.setText(movieModel.getTitle());
+            TextView textView = convertView.findViewById(R.id.tv_movie_title);
+            textView.setText(movieModel.getTitle());
+        }
 
         return convertView;
     }

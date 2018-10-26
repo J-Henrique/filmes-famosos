@@ -1,14 +1,10 @@
 package com.jhbb.android.filmesfamosos.utilities;
 
-import android.util.Log;
-
 import com.jhbb.android.filmesfamosos.MovieModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public class MoviesJsonUtils {
 
