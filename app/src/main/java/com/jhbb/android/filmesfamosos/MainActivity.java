@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,15 +24,15 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private GridView mMoviesListGridView;
+    private RecyclerView mMoviesRecyclerView;
+    private MoviesAdapter mMoviesAdapter;
+    private RecyclerView.LayoutManager mMoviesLayoutManager;
 
     private ProgressBar mLoadingProgressBar;
-
-    private MoviesAdapter moviesAdapter;
 
     private MovieCategoryEnum orderByCategory;
 
@@ -41,33 +43,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMoviesListGridView = findViewById(R.id.gv_movies_list);
         mLoadingProgressBar = findViewById(R.id.pb_loading_movies);
+        mMoviesRecyclerView = findViewById(R.id.rv_movies_list);
+
+        mMoviesRecyclerView.setHasFixedSize(true);
+        mMoviesLayoutManager = new GridLayoutManager(this, 2);
+        mMoviesRecyclerView.setLayoutManager(mMoviesLayoutManager);
+
+        mMoviesAdapter = new MoviesAdapter(this);
+        mMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
         orderByCategory = MovieCategoryEnum.POPULAR;
         callMoviesTask();
     }
 
-    private void setMoviesAdapter(List<MovieModel> moviesList) {
-        moviesAdapter = new MoviesAdapter(this, moviesList);
-        mMoviesListGridView.setAdapter(moviesAdapter);
-        mMoviesListGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.v(TAG, "grid item clicked");
-                MovieModel selectedItem = moviesAdapter.getItem(i);
-
-                Intent startMovieDetailsIntent = new Intent(getApplicationContext(), MovieDetailsActivity.class);
-                startMovieDetailsIntent.putExtra("movieDetails", selectedItem);
-
-                startActivity(startMovieDetailsIntent);
-            }
-        });
-    }
-
     private void displayLoading(boolean loadingVisible) {
         mLoadingProgressBar.setVisibility(loadingVisible ? View.VISIBLE : View.INVISIBLE);
-        mMoviesListGridView.setVisibility(loadingVisible ? View.INVISIBLE: View.VISIBLE);
+        mMoviesRecyclerView.setVisibility(loadingVisible ? View.INVISIBLE: View.VISIBLE);
     }
 
     private void callMoviesTask() {
@@ -105,6 +97,16 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onClick(MovieModel movieModel) {
+        Log.v(TAG, "grid item clicked");
+
+        Intent startMovieDetailsIntent = new Intent(getApplicationContext(), MovieDetailsActivity.class);
+        startMovieDetailsIntent.putExtra("movieDetails", movieModel);
+
+        startActivity(startMovieDetailsIntent);
+    }
+
     class FetchMoviesTask extends AsyncTask<Void, Void, MovieModel[]> {
 
         @Override
@@ -129,8 +131,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(MovieModel[] moviesArray) {
             if (moviesArray != null && moviesArray.length > 0) {
-                setMoviesAdapter(Arrays.asList(moviesArray));
-
+                mMoviesAdapter.setMoviesData(Arrays.asList(moviesArray));
                 displayLoading(false);
             } else {
                 Toast.makeText(getApplicationContext(), R.string.warning_no_results, Toast.LENGTH_LONG).show();
