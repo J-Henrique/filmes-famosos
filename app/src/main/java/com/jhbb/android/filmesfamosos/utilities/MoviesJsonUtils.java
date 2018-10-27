@@ -1,38 +1,29 @@
 package com.jhbb.android.filmesfamosos.utilities;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jhbb.android.filmesfamosos.MovieModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.List;
+
 public class MoviesJsonUtils {
 
     private static final String TAG = MoviesJsonUtils.class.getSimpleName();
 
     public static MovieModel[] getMoviesListFromResponse(String httpResponse) throws JSONException {
+        Gson gson = new Gson();
+
         JSONObject jsonObject = new JSONObject(httpResponse);
-        MovieModel[] moviesList = null;
+        JSONArray jsonArray = jsonObject.getJSONArray("results");
 
-        if (jsonObject.has("results")) {
-            JSONArray jsonArray = jsonObject.getJSONArray("results");
-            int arrayLength = jsonArray.length();
-
-            moviesList = new MovieModel[arrayLength];
-            for (int i = 0; i < arrayLength; i++) {
-                MovieModel movieModel = new MovieModel();
-                JSONObject object = jsonArray.getJSONObject(i);
-
-                movieModel.setTitle(object.getString("title"));
-                movieModel.setPoster(object.getString("poster_path"));
-                movieModel.setOverview(object.getString("overview"));
-                movieModel.setVoteAverage(object.getString("vote_average"));
-                movieModel.setReleaseDate(object.getString("release_date"));
-
-                moviesList[i] = movieModel;
-            }
-        }
-
-        return moviesList;
+        return gson.fromJson(jsonArray.toString(), MovieModel[].class);
     }
 }
