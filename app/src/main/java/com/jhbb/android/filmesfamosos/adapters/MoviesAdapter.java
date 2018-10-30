@@ -1,17 +1,15 @@
 package com.jhbb.android.filmesfamosos.adapters;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.jhbb.android.filmesfamosos.MovieModel;
+import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.R;
 import com.jhbb.android.filmesfamosos.enums.ImageSizeEnum;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;

@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.jhbb.android.filmesfamosos.adapters.MoviesAdapter;
 import com.jhbb.android.filmesfamosos.enums.MovieCategoryEnum;
+import com.jhbb.android.filmesfamosos.models.MovieModel;
+import com.jhbb.android.filmesfamosos.models.MoviesResultModel;
 import com.jhbb.android.filmesfamosos.utilities.NetworkUtils;
 import com.jhbb.android.filmesfamosos.utilities.RetrofitClient;
 

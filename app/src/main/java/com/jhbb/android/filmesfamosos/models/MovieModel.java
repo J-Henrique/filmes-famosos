@@ -1,4 +1,4 @@
-package com.jhbb.android.filmesfamosos;
+package com.jhbb.android.filmesfamosos.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

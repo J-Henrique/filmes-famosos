@@ -1,6 +1,7 @@
-package com.jhbb.android.filmesfamosos;
+package com.jhbb.android.filmesfamosos.models;
 
 import com.google.gson.annotations.SerializedName;
+import com.jhbb.android.filmesfamosos.models.MovieModel;
 
 public class MoviesResultModel {
 

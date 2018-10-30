@@ -1,6 +1,6 @@
 package com.jhbb.android.filmesfamosos.utilities;
 
-import com.jhbb.android.filmesfamosos.MoviesResultModel;
+import com.jhbb.android.filmesfamosos.models.MoviesResultModel;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;

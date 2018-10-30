@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jhbb.android.filmesfamosos.enums.ImageSizeEnum;
+import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
 

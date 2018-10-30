@@ -1,18 +1,11 @@
 package com.jhbb.android.filmesfamosos.utilities;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.jhbb.android.filmesfamosos.MovieModel;
+import com.jhbb.android.filmesfamosos.models.MovieModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.util.List;
 
 public class MoviesJsonUtils {
 
