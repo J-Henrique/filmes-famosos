@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.R;
-import com.jhbb.android.filmesfamosos.enums.ImageSizeEnum;
+import com.jhbb.android.filmesfamosos.constants.ImageSizeConstant;
+import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
 
@@ -77,7 +77,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         if (movieModel != null) {
             String imagePath = movieModel.getPoster();
 
-            URL imageUrl = ImageUtils.buildImageUrl(ImageSizeEnum.LARGE, imagePath);
+            URL imageUrl = ImageUtils.buildImageUrl(ImageSizeConstant.LARGE, imagePath);
             Picasso.get().load(imageUrl.toString()).into(moviesViewHolder.mPosterImageView);
 
             moviesViewHolder.mTitleTextView.setText(movieModel.getTitle());

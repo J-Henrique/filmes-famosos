@@ -7,10 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@Deprecated
 public class MoviesJsonUtils {
 
     private static final String TAG = MoviesJsonUtils.class.getSimpleName();
 
+    @Deprecated
     public static MovieModel[] getMoviesListFromResponse(String httpResponse) throws JSONException {
         Gson gson = new Gson();
 

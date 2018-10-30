@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.jhbb.android.filmesfamosos.BuildConfig;
-import com.jhbb.android.filmesfamosos.enums.MovieCategoryEnum;
+import com.jhbb.android.filmesfamosos.constants.MovieCategoryConstant;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -26,7 +26,7 @@ public final class NetworkUtils {
 
 
     @Deprecated
-    public static URL buildUrl(MovieCategoryEnum movieCategory) {
+    public static URL buildUrl(int movieCategory) {
         String endpoint = getEndpoint(movieCategory);
 
         Uri uri = Uri.parse(MOVIES_URL)
@@ -65,14 +65,14 @@ public final class NetworkUtils {
     }
 
     @Deprecated
-    private static String getEndpoint(MovieCategoryEnum category) {
+    private static String getEndpoint(int category) {
         String currentEndpoint = "";
 
         switch (category) {
-            case POPULAR:
+            case MovieCategoryConstant.POPULAR:
                 currentEndpoint = POPULAR_ENDPOINT;
                 break;
-            case TOP_RATED:
+            case MovieCategoryConstant.TOP_RATED:
                 currentEndpoint = TOP_RATED_ENDPOINT;
                 break;
         }

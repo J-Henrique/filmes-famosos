@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.jhbb.android.filmesfamosos.adapters.MoviesAdapter;
-import com.jhbb.android.filmesfamosos.enums.MovieCategoryEnum;
+import com.jhbb.android.filmesfamosos.constants.MovieCategoryConstant;
 import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.models.MoviesResultModel;
 import com.jhbb.android.filmesfamosos.utilities.NetworkUtils;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private ProgressBar mLoadingProgressBar;
 
-    private MovieCategoryEnum orderByCategory;
+    private int orderByCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mMoviesAdapter = new MoviesAdapter(this);
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
-        orderByCategory = MovieCategoryEnum.POPULAR;
+        orderByCategory = MovieCategoryConstant.POPULAR;
         callMoviesTask();
     }
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
             RetrofitClient.GetMoviesService service = RetrofitClient.getRetrofit().create(RetrofitClient.GetMoviesService.class);
             Call<MoviesResultModel> call =
-                    orderByCategory == MovieCategoryEnum.POPULAR
+                    orderByCategory == MovieCategoryConstant.POPULAR
                             ? service.getPopularMovies(BuildConfig.ApiKey)
                             : service.getTopRatedMovies(BuildConfig.ApiKey);
 
@@ -117,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         int itemSelected = item.getItemId();
 
         if (itemSelected == R.id.mi_popular) {
-            orderByCategory = MovieCategoryEnum.POPULAR;
+            orderByCategory = MovieCategoryConstant.POPULAR;
         } else if (itemSelected == R.id.mi_top_rated) {
-            orderByCategory = MovieCategoryEnum.TOP_RATED;
+            orderByCategory = MovieCategoryConstant.TOP_RATED;
         }
 
         callMoviesTask();

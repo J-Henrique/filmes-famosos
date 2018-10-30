@@ -1,12 +1,12 @@
 package com.jhbb.android.filmesfamosos;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.jhbb.android.filmesfamosos.enums.ImageSizeEnum;
+import com.jhbb.android.filmesfamosos.constants.ImageSizeConstant;
 import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
 import com.squareup.picasso.Picasso;
@@ -37,7 +37,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
             Log.v(TAG, "selected movie: " + movieModel.getTitle());
 
             String imagePath = movieModel.getPoster();
-            URL imageUrl = ImageUtils.buildImageUrl(ImageSizeEnum.EXTRA_LARGE, imagePath);
+            URL imageUrl = ImageUtils.buildImageUrl(ImageSizeConstant.EXTRA_LARGE, imagePath);
             Picasso.get().load(imageUrl.toString()).into(mPosterImageView);
 
             mMovieTitleTextView.setText(movieModel.getTitle());
