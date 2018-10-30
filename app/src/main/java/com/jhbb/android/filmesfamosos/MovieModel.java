@@ -7,11 +7,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class MovieModel implements Parcelable {
 
+    @SerializedName("title")
     private String title;
 
     @SerializedName("poster_path")
     private String poster;
 
+    @SerializedName("overview")
     private String overview;
 
     @SerializedName("vote_average")

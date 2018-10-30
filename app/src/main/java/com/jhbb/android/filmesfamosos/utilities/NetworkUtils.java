@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
+import com.jhbb.android.filmesfamosos.BuildConfig;
 import com.jhbb.android.filmesfamosos.enums.MovieCategoryEnum;
 
 import java.io.IOException;
@@ -24,14 +25,14 @@ public final class NetworkUtils {
     private static final String TOP_RATED_ENDPOINT = "movie/top_rated";
 
 
-
+    @Deprecated
     public static URL buildUrl(MovieCategoryEnum movieCategory) {
         String endpoint = getEndpoint(movieCategory);
 
         Uri uri = Uri.parse(MOVIES_URL)
                 .buildUpon()
                 .appendEncodedPath(endpoint)
-                .appendQueryParameter(QUERY_PARAM, ApiConfigUtils.API_KEY_VALUE)
+                .appendQueryParameter(QUERY_PARAM, BuildConfig.ApiKey)
                 .build();
 
         URL url = null;
@@ -45,6 +46,7 @@ public final class NetworkUtils {
         return url;
     }
 
+    @Deprecated
     public static String getResponseFromUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
@@ -62,6 +64,7 @@ public final class NetworkUtils {
         }
     }
 
+    @Deprecated
     private static String getEndpoint(MovieCategoryEnum category) {
         String currentEndpoint = "";
 

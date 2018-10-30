@@ -1,28 +1,27 @@
 package com.jhbb.android.filmesfamosos;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.jhbb.android.filmesfamosos.adapters.MoviesAdapter;
 import com.jhbb.android.filmesfamosos.enums.MovieCategoryEnum;
-import com.jhbb.android.filmesfamosos.utilities.MoviesJsonUtils;
 import com.jhbb.android.filmesfamosos.utilities.NetworkUtils;
+import com.jhbb.android.filmesfamosos.utilities.RetrofitClient;
 
-import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler {
 
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "on create");
+        Log.v(TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -70,7 +69,35 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         if (isOnline) {
             Log.v(TAG, "connection established");
             Log.v(TAG, "fetching data");
-            new FetchMoviesTask().execute();
+
+            displayLoading(true);
+
+            RetrofitClient.GetMoviesService service = RetrofitClient.getRetrofit().create(RetrofitClient.GetMoviesService.class);
+            Call<MoviesResultModel> call =
+                    orderByCategory == MovieCategoryEnum.POPULAR
+                            ? service.getPopularMovies(BuildConfig.ApiKey)
+                            : service.getTopRatedMovies(BuildConfig.ApiKey);
+
+            call.enqueue(new Callback<MoviesResultModel>() {
+                @Override
+                public void onResponse(Call<MoviesResultModel> call, Response<MoviesResultModel> response) {
+                    Log.v(TAG, "onResponse: " + response.body());
+                    MovieModel[] moviesArray = response.body().getMovieModels();
+
+                    displayLoading(false);
+
+                    if (moviesArray != null && moviesArray.length > 0) {
+                        mMoviesAdapter.setMoviesData(Arrays.asList(moviesArray));
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.warning_no_results, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MoviesResultModel> call, Throwable t) {
+                    Log.v(TAG, "onFailure");
+                }
+            });
         } else {
             Log.v(TAG, "no connection");
             Toast.makeText(getApplicationContext(), R.string.warning_connectivity, Toast.LENGTH_LONG).show();
@@ -105,37 +132,5 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         startMovieDetailsIntent.putExtra("movieDetails", movieModel);
 
         startActivity(startMovieDetailsIntent);
-    }
-
-    class FetchMoviesTask extends AsyncTask<Void, Void, MovieModel[]> {
-
-        @Override
-        protected void onPreExecute() {
-            displayLoading(true);
-        }
-
-        @Override
-        protected MovieModel[] doInBackground(Void... voids) {
-            URL url = NetworkUtils.buildUrl(orderByCategory);
-
-            try {
-                String httpResponse = NetworkUtils.getResponseFromUrl(url);
-
-                return MoviesJsonUtils.getMoviesListFromResponse(httpResponse);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(MovieModel[] moviesArray) {
-            if (moviesArray != null && moviesArray.length > 0) {
-                mMoviesAdapter.setMoviesData(Arrays.asList(moviesArray));
-                displayLoading(false);
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.warning_no_results, Toast.LENGTH_LONG).show();
-            }
-        }
     }
 }
