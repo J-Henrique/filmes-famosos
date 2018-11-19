@@ -1,7 +1,9 @@
 package com.jhbb.android.filmesfamosos.utilities;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jhbb.android.filmesfamosos.models.MoviesResultModel;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -15,7 +17,12 @@ public class RetrofitClient {
 
     public static Retrofit getRetrofit() {
         if (retrofit == null) {
+            OkHttpClient okClient = new OkHttpClient.Builder()
+                    .addNetworkInterceptor(new StethoInterceptor())
+                    .build();
+
             retrofit = new Retrofit.Builder()
+                    .client(okClient)
                     .baseUrl(MOVIES_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
