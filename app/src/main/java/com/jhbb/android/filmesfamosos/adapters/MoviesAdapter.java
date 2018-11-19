@@ -13,6 +13,7 @@ import com.jhbb.android.filmesfamosos.R;
 import com.jhbb.android.filmesfamosos.constants.ImageSizeConstant;
 import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
@@ -71,17 +72,25 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MoviesViewHolder moviesViewHolder, int i) {
-        MovieModel movieModel = mMoviesDataset.get(i);
+    public void onBindViewHolder(@NonNull final MoviesViewHolder moviesViewHolder, int i) {
+        final MovieModel movieModel = mMoviesDataset.get(i);
 
         if (movieModel != null) {
             String imagePath = movieModel.getPoster();
 
             URL imageUrl = ImageUtils.buildImageUrl(ImageSizeConstant.LARGE, imagePath);
-            Picasso.get().load(imageUrl.toString()).into(moviesViewHolder.mPosterImageView);
+            Picasso.get().load(imageUrl.toString()).into(moviesViewHolder.mPosterImageView, new Callback() {
+                @Override
+                public void onSuccess() {
+                    moviesViewHolder.mTitleTextView.setText(movieModel.getTitle());
+                    Log.v(TAG, movieModel.getTitle());
+                }
 
-            moviesViewHolder.mTitleTextView.setText(movieModel.getTitle());
-            Log.v(TAG, movieModel.getTitle());
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
         }
     }
 

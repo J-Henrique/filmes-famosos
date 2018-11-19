@@ -18,7 +18,7 @@
             android:id="@+id/iv_movie_poster"
             android:layout_gravity="center"
             android:layout_margin="8dp"
-            android:src="@drawable/ic_launcher_background"
+            tools:src="@drawable/ic_launcher_foreground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -38,6 +38,7 @@
             <TextView
                 android:id="@+id/tv_movie_title"
                 style="@style/TextViewValue"
+                tools:text="Mission: Impossible - Fallout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -50,6 +51,7 @@
             <TextView
                 android:id="@+id/tv_release_date"
                 style="@style/TextViewValue"
+                tools:text="2018-07-13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -62,6 +64,7 @@
             <TextView
                 android:id="@+id/tv_vote_average"
                 style="@style/TextViewValue"
+                tools:text="7.3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -74,7 +77,19 @@
             <TextView
                 android:id="@+id/tv_overview"
                 style="@style/TextViewValue"
+                tools:text="When an IMF mission ends badly, the world is faced with dire consequences. As Ethan Hunt takes it upon himself to fulfill his original briefing, the CIA begin to question his loyalty and his motives. The IMF team find themselves in a race against time, hunted by assassins while trying to prevent a global catastrophe."
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                style="@style/TextViewName"
+                android:text="@string/field_trailer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_videos_list"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>

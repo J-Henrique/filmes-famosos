@@ -11,4 +11,6 @@
     <string name="field_vote_average">Avaliação</string>
     <string name="field_release_date">Data de Lançamento</string>
     <string name="field_overview">Sinopse</string>
+    <string name="field_trailer">Trailer</string>
+
 </resources>

@@ -86,13 +86,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                     Log.v(TAG, "onResponse: " + response.body());
                     MovieModel[] moviesArray = response.body().getMovieModels();
 
-                    displayLoading(false);
-
                     if (moviesArray != null && moviesArray.length > 0) {
                         mMoviesAdapter.setMoviesData(Arrays.asList(moviesArray));
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.warning_no_results, Toast.LENGTH_LONG).show();
                     }
+
+                    displayLoading(false);
                 }
 
                 @Override
