@@ -86,7 +86,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
         mRecyclerView = findViewById(R.id.rv_videos_list);
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAdapter = new VideosAdapter(this);

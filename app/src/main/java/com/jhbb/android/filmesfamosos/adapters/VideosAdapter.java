@@ -40,7 +40,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideosView
         VideoModel videoModel = mVideosDataset.get(i);
 
         if (videoModel != null) {
-            videosViewHolder.mMovieTextView.setText(videoModel.getName());
+            videosViewHolder.mMovieTextView.setText(i + 1 + ") " + videoModel.getName());
         }
     }
 
