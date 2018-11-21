@@ -4,16 +4,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jhbb.android.filmesfamosos.adapters.ReviewsAdapter;
 import com.jhbb.android.filmesfamosos.adapters.VideosAdapter;
 import com.jhbb.android.filmesfamosos.constants.ImageSizeConstant;
 import com.jhbb.android.filmesfamosos.models.MovieModel;
+import com.jhbb.android.filmesfamosos.models.ReviewModel;
+import com.jhbb.android.filmesfamosos.models.ReviewsResultModel;
 import com.jhbb.android.filmesfamosos.models.VideoModel;
 import com.jhbb.android.filmesfamosos.models.VideosResultModel;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
@@ -38,9 +40,14 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
     private TextView mReleaseDateTextView;
     private TextView mOverviewTextView;
 
-    private VideosAdapter mAdapter;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private VideosAdapter mVideosAdapter;
+    private ReviewsAdapter mReviewsAdapter;
+
+    private RecyclerView mVideosRecyclerView;
+    private RecyclerView mReviewsRecyclerView;
+
+    private RecyclerView.LayoutManager mVideosLayoutManager;
+    private RecyclerView.LayoutManager mReviewsLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
             Log.v(TAG, "selected movie: " + movieModel);
 
             callVideosByIdTask(movieModel.getId());
+            callReviewsByIdTask(movieModel.getId());
 
             String imagePath = movieModel.getPoster();
             URL imageUrl = ImageUtils.buildImageUrl(ImageSizeConstant.EXTRA_LARGE, imagePath);
@@ -83,14 +91,23 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
         mReleaseDateTextView = findViewById(R.id.tv_release_date);
         mOverviewTextView = findViewById(R.id.tv_overview);
 
-        mRecyclerView = findViewById(R.id.rv_videos_list);
-        mRecyclerView.setHasFixedSize(true);
+        mVideosRecyclerView = findViewById(R.id.rv_videos_list);
+        mReviewsRecyclerView = findViewById(R.id.rv_reviews_list);
 
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mVideosRecyclerView.setHasFixedSize(true);
+        mReviewsRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new VideosAdapter(this);
-        mRecyclerView.setAdapter(mAdapter);
+        mVideosLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mReviewsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        mVideosRecyclerView.setLayoutManager(mVideosLayoutManager);
+        mReviewsRecyclerView.setLayoutManager(mReviewsLayoutManager);
+
+        mVideosAdapter = new VideosAdapter(this);
+        mReviewsAdapter = new ReviewsAdapter();
+
+        mVideosRecyclerView.setAdapter(mVideosAdapter);
+        mReviewsRecyclerView.setAdapter(mReviewsAdapter);
     }
 
     private void callVideosByIdTask(String movieId) {
@@ -99,7 +116,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
 
         if (isOnline) {
             Log.v(TAG, "connection established");
-            Log.v(TAG, "fetching data");
+            Log.v(TAG, "fetching videos");
 
             RetrofitClient.GetVideosService service = RetrofitClient.getRetrofit().create(RetrofitClient.GetVideosService.class);
             Call<VideosResultModel> call = service.getMovieVideosById(movieId, BuildConfig.ApiKey);
@@ -110,11 +127,39 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
                     VideoModel[] videoModels = response.body().getVideoModels();
                     Log.v(TAG, "onResponse: videos fetched " + videoModels.length);
 
-                    mAdapter.setVideosDataset(Arrays.asList(videoModels));
+                    mVideosAdapter.setVideosDataset(Arrays.asList(videoModels));
                 }
 
                 @Override
                 public void onFailure(Call<VideosResultModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    private void callReviewsByIdTask(String movieId) {
+        Log.v(TAG, "checking internet connectivity");
+        boolean isOnline = NetworkUtils.isOnline(getApplicationContext());
+
+        if (isOnline) {
+            Log.v(TAG, "connection established");
+            Log.v(TAG, "fetching reviews");
+
+            RetrofitClient.GetReviewsService service = RetrofitClient.getRetrofit().create(RetrofitClient.GetReviewsService.class);
+            Call<ReviewsResultModel> call = service.getMovieReviewsById(movieId, BuildConfig.ApiKey);
+
+            call.enqueue(new retrofit2.Callback<ReviewsResultModel>() {
+                @Override
+                public void onResponse(Call<ReviewsResultModel> call, Response<ReviewsResultModel> response) {
+                    ReviewModel[] reviewModels = response.body().getReviewModels();
+                    Log.v(TAG, "onResponse: reviews fetched " + reviewModels.length);
+
+                    mReviewsAdapter.setReviewsDataSet(Arrays.asList(reviewModels));
+                }
+
+                @Override
+                public void onFailure(Call<ReviewsResultModel> call, Throwable t) {
 
                 }
             });

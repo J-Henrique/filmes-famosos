@@ -2,6 +2,7 @@ package com.jhbb.android.filmesfamosos.utilities;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jhbb.android.filmesfamosos.models.MoviesResultModel;
+import com.jhbb.android.filmesfamosos.models.ReviewsResultModel;
 import com.jhbb.android.filmesfamosos.models.VideosResultModel;
 
 import okhttp3.OkHttpClient;
@@ -48,4 +49,14 @@ public class RetrofitClient {
                 @Path("id") String movieId,
                 @Query("api_key") String apiKey);
     }
+
+    public interface GetReviewsService {
+
+        @GET("movie/{id}/reviews")
+        Call<ReviewsResultModel> getMovieReviewsById(
+                @Path("id") String movieId,
+                @Query("api_key") String apiKey);
+    }
+
+
 }
