@@ -23,6 +23,7 @@ import com.jhbb.android.filmesfamosos.models.MoviesResultModel;
 import com.jhbb.android.filmesfamosos.utilities.NetworkUtils;
 import com.jhbb.android.filmesfamosos.utilities.RetrofitClient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +43,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private int orderByCategory;
 
-    private AppDatabase mDb;
+    private static AppDatabase mDb;
+
+    private static final String MOVIES_LIST_KEY = "movies_list_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +68,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
         orderByCategory = MovieCategoryConstant.POPULAR;
-        callMoviesTask();
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(MOVIES_LIST_KEY)) {
+                ArrayList<MovieModel> listOfMovies = savedInstanceState.getParcelableArrayList(MOVIES_LIST_KEY);
+                setAdapter(listOfMovies);
+            }
+        } else {
+            callMoviesTask();
+        }
     }
 
     @Override
@@ -76,6 +87,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         if (orderByCategory == MovieCategoryConstant.FAVORITES) {
             getFavoritesFromDb();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.v(TAG, "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(
+                MOVIES_LIST_KEY,
+                new ArrayList<>(mMoviesAdapter.getMoviesDataset()));
+
     }
 
     private void displayLoading(boolean loadingVisible) {
@@ -153,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private void setAdapter(List<MovieModel> listOfMovies) {
         if (listOfMovies != null && listOfMovies.size() > 0) {
-            mMoviesAdapter.setMoviesData(listOfMovies);
+            mMoviesAdapter.setMoviesDataset(listOfMovies);
         } else {
             Toast.makeText(getApplicationContext(), R.string.warning_no_results, Toast.LENGTH_LONG).show();
         }

@@ -99,8 +99,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         return mMoviesDataset == null ? 0 : mMoviesDataset.size();
     }
 
-    public void setMoviesData(List<MovieModel> movieModelList) {
+    public void setMoviesDataset(List<MovieModel> movieModelList) {
         mMoviesDataset = movieModelList;
         notifyDataSetChanged();
+    }
+
+    public List<MovieModel> getMoviesDataset() {
+        return mMoviesDataset;
     }
 }
