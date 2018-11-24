@@ -1,12 +1,20 @@
 package com.jhbb.android.filmesfamosos.models;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.OnConflictStrategy;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "movies")
 public class MovieModel implements Parcelable {
 
+    @PrimaryKey
+    @NonNull
     @SerializedName("id")
     private String id;
 
@@ -25,6 +33,9 @@ public class MovieModel implements Parcelable {
     @SerializedName("release_date")
     private String releaseDate;
 
+    @Ignore
+    private boolean isFavorite;
+
     private MovieModel(Parcel in) {
         id = in.readString();
         title = in.readString();
@@ -32,9 +43,18 @@ public class MovieModel implements Parcelable {
         overview = in.readString();
         voteAverage = in.readString();
         releaseDate = in.readString();
+        isFavorite = in.readByte() != 0;
+    }
+
+    public MovieModel() {
+
     }
 
     public String getId() { return id; }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -76,6 +96,14 @@ public class MovieModel implements Parcelable {
         this.releaseDate = releaseDate;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -89,6 +117,7 @@ public class MovieModel implements Parcelable {
         out.writeString(overview);
         out.writeString(voteAverage);
         out.writeString(releaseDate);
+        out.writeByte((byte) (isFavorite ? 1 : 0));
     }
 
     public static final Parcelable.Creator<MovieModel> CREATOR = new Parcelable.Creator<MovieModel>() {
@@ -113,6 +142,7 @@ public class MovieModel implements Parcelable {
                 ", overview='" + overview + '\'' +
                 ", voteAverage='" + voteAverage + '\'' +
                 ", releaseDate='" + releaseDate + '\'' +
+                ", isFavorite='" + isFavorite + '\'' +
                 '}';
     }
 }

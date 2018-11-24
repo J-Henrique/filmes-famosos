@@ -9,4 +9,8 @@
         android:id="@+id/mi_top_rated"
         app:showAsAction="collapseActionView"
         android:title="@string/menu_top_rated"/>
+    <item
+        android:id="@+id/mi_favorites"
+        app:showAsAction="collapseActionView"
+        android:title="@string/menu_favorites"/>
 </menu>

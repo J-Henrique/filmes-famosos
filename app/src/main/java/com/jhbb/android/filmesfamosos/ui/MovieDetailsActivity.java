@@ -1,4 +1,4 @@
-package com.jhbb.android.filmesfamosos;
+package com.jhbb.android.filmesfamosos.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,12 +7,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.jhbb.android.filmesfamosos.AppExecutors;
+import com.jhbb.android.filmesfamosos.BuildConfig;
+import com.jhbb.android.filmesfamosos.R;
 import com.jhbb.android.filmesfamosos.adapters.ReviewsAdapter;
 import com.jhbb.android.filmesfamosos.adapters.VideosAdapter;
 import com.jhbb.android.filmesfamosos.constants.ImageSizeConstant;
+import com.jhbb.android.filmesfamosos.database.AppDatabase;
 import com.jhbb.android.filmesfamosos.models.MovieModel;
 import com.jhbb.android.filmesfamosos.models.ReviewModel;
 import com.jhbb.android.filmesfamosos.models.ReviewsResultModel;
@@ -40,6 +47,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
     private TextView mReleaseDateTextView;
     private TextView mOverviewTextView;
 
+    private Menu mFavoriteMenu;
+
     private VideosAdapter mVideosAdapter;
     private ReviewsAdapter mReviewsAdapter;
 
@@ -48,6 +57,13 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
 
     private RecyclerView.LayoutManager mVideosLayoutManager;
     private RecyclerView.LayoutManager mReviewsLayoutManager;
+
+    private AppDatabase mDb;
+
+    private static final int MENU_ITEM_FAVORITE = 0;
+    private static final int MENU_ITEM_UNFAVORITE = 1;
+
+    private static MovieModel sMovieModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,22 +74,27 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
 
         bindUIComponents();
 
-        final MovieModel movieModel = getIntent().getExtras().getParcelable("movieDetails");
-        if (movieModel != null) {
-            Log.v(TAG, "selected movie: " + movieModel);
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
-            callVideosByIdTask(movieModel.getId());
-            callReviewsByIdTask(movieModel.getId());
+        sMovieModel = getIntent().getExtras().getParcelable("movieDetails");
 
-            String imagePath = movieModel.getPoster();
+        checkMovieIsFavorite();
+
+        if (sMovieModel != null) {
+            Log.v(TAG, "selected movie: " + sMovieModel);
+
+            callVideosByIdTask(sMovieModel.getId());
+            callReviewsByIdTask(sMovieModel.getId());
+
+            String imagePath = sMovieModel.getPoster();
             URL imageUrl = ImageUtils.buildImageUrl(ImageSizeConstant.EXTRA_LARGE, imagePath);
             Picasso.get().load(imageUrl.toString()).into(mPosterImageView, new Callback() {
                 @Override
                 public void onSuccess() {
-                    mMovieTitleTextView.setText(movieModel.getTitle());
-                    mVoteAverageTextView.setText(movieModel.getVoteAverage());
-                    mReleaseDateTextView.setText(movieModel.getReleaseDate());
-                    mOverviewTextView.setText(movieModel.getOverview());
+                    mMovieTitleTextView.setText(sMovieModel.getTitle());
+                    mVoteAverageTextView.setText(sMovieModel.getVoteAverage());
+                    mReleaseDateTextView.setText(sMovieModel.getReleaseDate());
+                    mOverviewTextView.setText(sMovieModel.getOverview());
                 }
 
                 @Override
@@ -82,6 +103,80 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
                 }
             });
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.movie_details_menu, menu);
+        mFavoriteMenu = menu;
+
+        setStatusAsFavorite(sMovieModel.isFavorite());
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String message;
+
+        switch (item.getItemId()) {
+            case R.id.mi_favorite:
+                setStatusAsFavorite(true);
+
+                message = getResources().getString(R.string.favorite_message);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+                addToFavorites();
+                break;
+            case R.id.mi_unfavorite:
+                setStatusAsFavorite(false);
+
+                message = getResources().getString(R.string.unfavorite_message);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+                removeFromFavorites();
+                break;
+            case android.R.id.home:
+                finish();
+                break;
+        }
+
+        return true;
+    }
+
+    private void setStatusAsFavorite(boolean isFavorite) {
+        mFavoriteMenu.getItem(MENU_ITEM_FAVORITE).setVisible(!isFavorite);
+        mFavoriteMenu.getItem(MENU_ITEM_UNFAVORITE).setVisible(isFavorite);
+
+        sMovieModel.setFavorite(isFavorite);
+    }
+
+    private void addToFavorites() {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.movieDao().insertFavoriteMovie(sMovieModel);
+            }
+        });
+    }
+
+    private void removeFromFavorites() {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.movieDao().removeFavoriteMovie(sMovieModel);
+            }
+        });
+    }
+
+    private void checkMovieIsFavorite() {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                boolean isFavorite = mDb.movieDao().checkMovieIsFavorite(sMovieModel.getId());
+                sMovieModel.setFavorite(isFavorite);
+            }
+        });
     }
 
     private void bindUIComponents() {
