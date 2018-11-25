@@ -1,8 +1,7 @@
-package com.jhbb.android.filmesfamosos.models;
+package com.jhbb.android.filmesfamosos.service.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;

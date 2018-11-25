@@ -1,4 +1,4 @@
-package com.jhbb.android.filmesfamosos.database;
+package com.jhbb.android.filmesfamosos.service.database;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.util.Log;
 
-import com.jhbb.android.filmesfamosos.models.MovieModel;
+import com.jhbb.android.filmesfamosos.service.model.MovieModel;
 
 @Database(entities = {MovieModel.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {

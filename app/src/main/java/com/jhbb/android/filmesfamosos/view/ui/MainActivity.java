@@ -1,7 +1,10 @@
-package com.jhbb.android.filmesfamosos.ui;
+package com.jhbb.android.filmesfamosos.view.ui;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,24 +15,15 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.jhbb.android.filmesfamosos.AppExecutors;
-import com.jhbb.android.filmesfamosos.BuildConfig;
 import com.jhbb.android.filmesfamosos.R;
-import com.jhbb.android.filmesfamosos.adapters.MoviesAdapter;
 import com.jhbb.android.filmesfamosos.constants.MovieCategoryConstant;
-import com.jhbb.android.filmesfamosos.database.AppDatabase;
-import com.jhbb.android.filmesfamosos.models.MovieModel;
-import com.jhbb.android.filmesfamosos.models.MoviesResultModel;
+import com.jhbb.android.filmesfamosos.service.model.MovieModel;
 import com.jhbb.android.filmesfamosos.utilities.NetworkUtils;
-import com.jhbb.android.filmesfamosos.utilities.RetrofitClient;
+import com.jhbb.android.filmesfamosos.view.adapter.MoviesAdapter;
+import com.jhbb.android.filmesfamosos.viewmodel.MainViewModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler {
 
@@ -43,9 +37,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private int orderByCategory;
 
-    private static AppDatabase mDb;
-
     private static final String MOVIES_LIST_KEY = "movies_list_key";
+
+    MainViewModel mMainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +47,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mDb = AppDatabase.getInstance(getApplicationContext());
-        Log.v(TAG, "database instance: " + mDb);
 
         mLoadingProgressBar = findViewById(R.id.pb_loading_movies);
         mMoviesRecyclerView = findViewById(R.id.rv_movies_list);
@@ -67,25 +58,20 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mMoviesAdapter = new MoviesAdapter(this);
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
 
+        mMainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
         orderByCategory = MovieCategoryConstant.POPULAR;
 
         if (savedInstanceState != null) {
+            Log.v(TAG, "recover data from bundle");
             if (savedInstanceState.containsKey(MOVIES_LIST_KEY)) {
-                ArrayList<MovieModel> listOfMovies = savedInstanceState.getParcelableArrayList(MOVIES_LIST_KEY);
+                ArrayList<MovieModel> listOfMovies =
+                        savedInstanceState.getParcelableArrayList(MOVIES_LIST_KEY);
                 setAdapter(listOfMovies);
             }
         } else {
-            callMoviesTask();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        Log.v(TAG, "onResume");
-        super.onResume();
-
-        if (orderByCategory == MovieCategoryConstant.FAVORITES) {
-            getFavoritesFromDb();
+            Log.v(TAG, "recover data from ViewModel");
+            refreshMoviesList(orderByCategory);
         }
     }
 
@@ -100,84 +86,69 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     }
 
+    private void refreshMoviesList(int orderByCategory) {
+        displayLoading(true);
+
+        mMainViewModel.getPopularMoviesObservable().removeObservers(this);
+        mMainViewModel.getTopRatedMoviesObservable().removeObservers(this);
+        mMainViewModel.getFavoritesMoviesObservable().removeObservers(this);
+
+        if (!checkInternetStatus()) {
+            Log.v(TAG, "no connection");
+            Toast.makeText(getApplicationContext(), R.string.warning_connectivity, Toast.LENGTH_LONG).show();
+
+            displayLoading(false);
+            return;
+        }
+
+        switch (orderByCategory) {
+            case MovieCategoryConstant.POPULAR:
+                mMainViewModel.getPopularMoviesObservable().observe(this, new Observer<List<MovieModel>>() {
+                    @Override
+                    public void onChanged(@Nullable List<MovieModel> movieModels) {
+                        Log.v(TAG, "Popular Movies Observable onChanged was called");
+                        setAdapter(movieModels);
+                    }
+                });
+                break;
+            case MovieCategoryConstant.TOP_RATED:
+                mMainViewModel.getTopRatedMoviesObservable().observe(this, new Observer<List<MovieModel>>() {
+                    @Override
+                    public void onChanged(@Nullable List<MovieModel> movieModels) {
+                        Log.v(TAG, "Top Rated Observable onChanged was called");
+                        setAdapter(movieModels);
+                    }
+                });
+                break;
+            case MovieCategoryConstant.FAVORITES:
+                mMainViewModel.getFavoritesMoviesObservable().observe(this, new Observer<List<MovieModel>>() {
+                    @Override
+                    public void onChanged(@Nullable List<MovieModel> movieModels) {
+                        Log.v(TAG, "Favorites Observable onChanged was called");
+                        setAdapter(movieModels);
+                    }
+                });
+        }
+
+        displayLoading(false);
+    }
+
     private void displayLoading(boolean loadingVisible) {
         mLoadingProgressBar.setVisibility(loadingVisible ? View.VISIBLE : View.INVISIBLE);
         mMoviesRecyclerView.setVisibility(loadingVisible ? View.INVISIBLE: View.VISIBLE);
     }
 
-    private void callMoviesTask() {
-
+    private boolean checkInternetStatus() {
         Log.v(TAG, "checking internet connectivity");
-        boolean isOnline = NetworkUtils.isOnline(getApplicationContext());
-
-        if (isOnline) {
-            Log.v(TAG, "connection established");
-            Log.v(TAG, "fetching data");
-
-            if (orderByCategory == MovieCategoryConstant.FAVORITES) {
-                getFavoritesFromDb();
-            } else {
-                getMoviesFromService();
-            }
-        } else {
-            Log.v(TAG, "no connection");
-            Toast.makeText(getApplicationContext(), R.string.warning_connectivity, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void getMoviesFromService() {
-        displayLoading(true);
-
-        RetrofitClient.GetMoviesService service = RetrofitClient.getRetrofit().create(RetrofitClient.GetMoviesService.class);
-        Call<MoviesResultModel> call =
-                orderByCategory == MovieCategoryConstant.POPULAR
-                        ? service.getPopularMovies(BuildConfig.ApiKey)
-                        : service.getTopRatedMovies(BuildConfig.ApiKey);
-
-        call.enqueue(new Callback<MoviesResultModel>() {
-            @Override
-            public void onResponse(Call<MoviesResultModel> call, Response<MoviesResultModel> response) {
-                Log.v(TAG, "onResponse: " + response.body());
-                MovieModel[] moviesArray = response.body().getMovieModels();
-
-                setAdapter(Arrays.asList(moviesArray));
-
-                displayLoading(false);
-            }
-
-            @Override
-            public void onFailure(Call<MoviesResultModel> call, Throwable t) {
-                Log.v(TAG, "onFailure");
-            }
-        });
-    }
-
-    private void getFavoritesFromDb() {
-        displayLoading(true);
-
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<MovieModel> moviesList = mDb.movieDao().loadAllFavoriteMovies();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setAdapter(moviesList);
-
-                        displayLoading(false);
-                    }
-                });
-
-            }
-        });
+        return NetworkUtils.isOnline(getApplicationContext());
     }
 
     private void setAdapter(List<MovieModel> listOfMovies) {
         if (listOfMovies != null && listOfMovies.size() > 0) {
+            mMoviesRecyclerView.setVisibility(View.VISIBLE);
             mMoviesAdapter.setMoviesDataset(listOfMovies);
         } else {
-            Toast.makeText(getApplicationContext(), R.string.warning_no_results, Toast.LENGTH_LONG).show();
+            mMoviesRecyclerView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -203,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 break;
         }
 
-        callMoviesTask();
+        refreshMoviesList(orderByCategory);
         return true;
     }
 

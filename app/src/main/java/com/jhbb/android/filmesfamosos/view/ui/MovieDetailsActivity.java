@@ -1,4 +1,4 @@
-package com.jhbb.android.filmesfamosos.ui;
+package com.jhbb.android.filmesfamosos.view.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -16,18 +16,18 @@ import android.widget.Toast;
 import com.jhbb.android.filmesfamosos.AppExecutors;
 import com.jhbb.android.filmesfamosos.BuildConfig;
 import com.jhbb.android.filmesfamosos.R;
-import com.jhbb.android.filmesfamosos.adapters.ReviewsAdapter;
-import com.jhbb.android.filmesfamosos.adapters.VideosAdapter;
+import com.jhbb.android.filmesfamosos.view.adapter.ReviewsAdapter;
+import com.jhbb.android.filmesfamosos.view.adapter.VideosAdapter;
 import com.jhbb.android.filmesfamosos.constants.ImageSizeConstant;
-import com.jhbb.android.filmesfamosos.database.AppDatabase;
-import com.jhbb.android.filmesfamosos.models.MovieModel;
-import com.jhbb.android.filmesfamosos.models.ReviewModel;
-import com.jhbb.android.filmesfamosos.models.ReviewsResultModel;
-import com.jhbb.android.filmesfamosos.models.VideoModel;
-import com.jhbb.android.filmesfamosos.models.VideosResultModel;
+import com.jhbb.android.filmesfamosos.service.database.AppDatabase;
+import com.jhbb.android.filmesfamosos.service.model.MovieModel;
+import com.jhbb.android.filmesfamosos.service.model.ReviewModel;
+import com.jhbb.android.filmesfamosos.service.model.ReviewsResultModel;
+import com.jhbb.android.filmesfamosos.service.model.VideoModel;
+import com.jhbb.android.filmesfamosos.service.model.VideosResultModel;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
 import com.jhbb.android.filmesfamosos.utilities.NetworkUtils;
-import com.jhbb.android.filmesfamosos.utilities.RetrofitClient;
+import com.jhbb.android.filmesfamosos.service.repository.ProjectRepository;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -213,7 +213,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
             Log.v(TAG, "connection established");
             Log.v(TAG, "fetching videos");
 
-            RetrofitClient.GetVideosService service = RetrofitClient.getRetrofit().create(RetrofitClient.GetVideosService.class);
+            ProjectRepository.GetVideosService service = ProjectRepository.getRetrofit().create(ProjectRepository.GetVideosService.class);
             Call<VideosResultModel> call = service.getMovieVideosById(movieId, BuildConfig.ApiKey);
 
             call.enqueue(new retrofit2.Callback<VideosResultModel>() {
@@ -241,7 +241,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements VideosAda
             Log.v(TAG, "connection established");
             Log.v(TAG, "fetching reviews");
 
-            RetrofitClient.GetReviewsService service = RetrofitClient.getRetrofit().create(RetrofitClient.GetReviewsService.class);
+            ProjectRepository.GetReviewsService service = ProjectRepository.getRetrofit().create(ProjectRepository.GetReviewsService.class);
             Call<ReviewsResultModel> call = service.getMovieReviewsById(movieId, BuildConfig.ApiKey);
 
             call.enqueue(new retrofit2.Callback<ReviewsResultModel>() {

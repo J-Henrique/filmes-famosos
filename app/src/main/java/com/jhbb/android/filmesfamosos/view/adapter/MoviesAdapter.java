@@ -1,4 +1,4 @@
-package com.jhbb.android.filmesfamosos.adapters;
+package com.jhbb.android.filmesfamosos.view.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.jhbb.android.filmesfamosos.R;
 import com.jhbb.android.filmesfamosos.constants.ImageSizeConstant;
-import com.jhbb.android.filmesfamosos.models.MovieModel;
+import com.jhbb.android.filmesfamosos.service.model.MovieModel;
 import com.jhbb.android.filmesfamosos.utilities.ImageUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;

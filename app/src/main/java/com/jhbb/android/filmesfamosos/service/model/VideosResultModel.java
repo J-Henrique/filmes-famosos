@@ -1,4 +1,4 @@
-package com.jhbb.android.filmesfamosos.models;
+package com.jhbb.android.filmesfamosos.service.model;
 
 import com.google.gson.annotations.SerializedName;
 

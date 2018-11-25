@@ -1,4 +1,4 @@
-package com.jhbb.android.filmesfamosos.adapters;
+package com.jhbb.android.filmesfamosos.view.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jhbb.android.filmesfamosos.R;
-import com.jhbb.android.filmesfamosos.models.VideoModel;
+import com.jhbb.android.filmesfamosos.service.model.VideoModel;
 
 import java.util.List;
 
