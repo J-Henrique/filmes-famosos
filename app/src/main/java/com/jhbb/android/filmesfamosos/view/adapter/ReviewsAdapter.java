@@ -40,7 +40,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsV
         return reviewsListDataSet == null ? 0 : reviewsListDataSet.size();
     }
 
-    public void setReviewsDataSet(List<ReviewModel> reviewModelList) {
+    public void setReviewsDataset(List<ReviewModel> reviewModelList) {
         this.reviewsListDataSet = reviewModelList;
         notifyDataSetChanged();
     }

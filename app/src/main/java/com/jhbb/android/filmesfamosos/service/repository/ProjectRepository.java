@@ -7,11 +7,12 @@ import android.util.Log;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jhbb.android.filmesfamosos.BuildConfig;
-import com.jhbb.android.filmesfamosos.constants.MovieCategoryConstant;
 import com.jhbb.android.filmesfamosos.service.database.AppDatabase;
 import com.jhbb.android.filmesfamosos.service.model.MovieModel;
 import com.jhbb.android.filmesfamosos.service.model.MoviesResultModel;
+import com.jhbb.android.filmesfamosos.service.model.ReviewModel;
 import com.jhbb.android.filmesfamosos.service.model.ReviewsResultModel;
+import com.jhbb.android.filmesfamosos.service.model.VideoModel;
 import com.jhbb.android.filmesfamosos.service.model.VideosResultModel;
 
 import java.util.Arrays;
@@ -23,9 +24,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public class ProjectRepository {
 
@@ -36,6 +34,8 @@ public class ProjectRepository {
     private static ProjectRepository projectRepository;
 
     private MovieService movieService;
+    private ReviewsService reviewsService;
+    private VideosService videoService;
     private AppDatabase database;
 
     private ProjectRepository(Application application) {
@@ -50,6 +50,8 @@ public class ProjectRepository {
                 .build();
 
         movieService = retrofit.create(MovieService.class);
+        reviewsService = retrofit.create(ReviewsService.class);
+        videoService = retrofit.create(VideosService.class);
 
         database = AppDatabase.getInstance(application.getApplicationContext());
     }
@@ -61,21 +63,6 @@ public class ProjectRepository {
             }
         }
         return projectRepository;
-    }
-
-    public static Retrofit getRetrofit() {
-        if (retrofit == null) {
-            OkHttpClient okClient = new OkHttpClient.Builder()
-                    .addNetworkInterceptor(new StethoInterceptor())
-                    .build();
-
-            retrofit = new Retrofit.Builder()
-                    .client(okClient)
-                    .baseUrl(MOVIES_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-        return retrofit;
     }
 
     public LiveData<List<MovieModel>> getPopularMovies() {
@@ -130,21 +117,63 @@ public class ProjectRepository {
         return database.movieDao().loadAllFavoriteMovies();
     }
 
-    public interface GetVideosService {
-
-        @GET("movie/{id}/videos")
-        Call<VideosResultModel> getMovieVideosById(
-                @Path("id") String movieId,
-                @Query("api_key") String apiKey);
+    public boolean checkMovieIsFavorite(String id) {
+        return database.movieDao().checkMovieIsFavorite(id);
     }
 
-    public interface GetReviewsService {
-
-        @GET("movie/{id}/reviews")
-        Call<ReviewsResultModel> getMovieReviewsById(
-                @Path("id") String movieId,
-                @Query("api_key") String apiKey);
+    public void addToFavorites(MovieModel movieModel) {
+        database.movieDao().insertFavoriteMovie(movieModel);
     }
 
+    public void removeFromFavorites(MovieModel movieModel) {
+        database.movieDao().removeFavoriteMovie(movieModel);
+    }
 
+    public LiveData<List<VideoModel>> getVideosByMovieId(String movieId) {
+        final MutableLiveData<List<VideoModel>> data = new MutableLiveData<>();
+
+        Call<VideosResultModel> call = videoService.getMovieVideosById(movieId, BuildConfig.ApiKey);
+        call.enqueue(new retrofit2.Callback<VideosResultModel>() {
+            @Override
+            public void onResponse(Call<VideosResultModel> call, Response<VideosResultModel> response) {
+                Log.v(TAG, "onResponse: " + response.body());
+
+                VideoModel[] videoModels = response.body().getVideoModels();
+                data.setValue(Arrays.asList(videoModels));
+            }
+
+            @Override
+            public void onFailure(Call<VideosResultModel> call, Throwable t) {
+                Log.v(TAG, "onFailure");
+
+                data.setValue(null);
+            }
+        });
+
+        return data;
+    }
+
+    public LiveData<List<ReviewModel>> getReviewsByMovieId(String movieId) {
+        final MutableLiveData<List<ReviewModel>> data = new MutableLiveData<>();
+
+        Call<ReviewsResultModel> call = reviewsService.getMovieReviewsById(movieId, BuildConfig.ApiKey);
+        call.enqueue(new retrofit2.Callback<ReviewsResultModel>() {
+            @Override
+            public void onResponse(Call<ReviewsResultModel> call, Response<ReviewsResultModel> response) {
+                Log.v(TAG, "onResponse: " + response.body());
+
+                ReviewModel[] reviewModels = response.body().getReviewModels();
+                data.setValue(Arrays.asList(reviewModels));
+            }
+
+            @Override
+            public void onFailure(Call<ReviewsResultModel> call, Throwable t) {
+                Log.v(TAG, "onFailure");
+
+                data.setValue(null);
+            }
+        });
+
+        return data;
+    }
 }
