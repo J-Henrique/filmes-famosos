@@ -185,6 +185,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         Intent startMovieDetailsIntent = new Intent(getApplicationContext(), MovieDetailsActivity.class);
         startMovieDetailsIntent.putExtra("movieDetails", movieModel);
 
-        startActivity(startMovieDetailsIntent);
+        if (startMovieDetailsIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(startMovieDetailsIntent);
+        }
     }
 }

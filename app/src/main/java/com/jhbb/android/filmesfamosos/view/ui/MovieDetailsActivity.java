@@ -122,9 +122,15 @@ public class MovieDetailsActivity extends AppCompatActivity
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                boolean isFavorite = sViewModel.checkMovieIsFavorite(sMovieModel.getId());
-                sMovieModel.setFavorite(isFavorite);
-                setStatusAsFavorite(isFavorite);
+                final boolean isFavorite = sViewModel.checkMovieIsFavorite(sMovieModel.getId());
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sMovieModel.setFavorite(isFavorite);
+                        setStatusAsFavorite(isFavorite);
+                    }
+                });
             }
         });
 
